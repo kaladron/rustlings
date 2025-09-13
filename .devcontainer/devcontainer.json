@@ -1,0 +1,58 @@
+{
+	"name": "Rustlings Development Environment",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "."
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "latest"
+		}
+	},
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": {
+		"setup-tools": "rustc --version && cargo --version && rustup component add clippy rustfmt",
+		"validate": ".devcontainer/validate.sh",
+		"setup-welcome": "echo 'echo \"🦀 Welcome to the Rustlings development environment!\"' >> ~/.bashrc && echo 'echo \"Rust version: $(rustc --version)\"' >> ~/.bashrc && echo 'echo \"Ready to start learning Rust with Rustlings!\"' >> ~/.bashrc"
+	},
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"rust-lang.rust-analyzer"
+			],
+			"settings": {
+				"rust-analyzer.cargo.buildScripts.enable": true,
+				"rust-analyzer.procMacro.enable": true,
+				"editor.formatOnSave": true,
+				"editor.tabSize": 4,
+				"editor.insertSpaces": true,
+				"files.trimTrailingWhitespace": true,
+				"files.insertFinalNewline": true,
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"[rust]": {
+					"editor.defaultFormatter": null
+				}
+			}
+		}
+	},
+	// Set container environment variables
+	"containerEnv": {
+		"RUSTLINGS_DEV_MODE": "1"
+	},
+	// Port forwarding for any potential web servers or debugging
+	"forwardPorts": [
+		8080,
+		3000
+	],
+	// Lifecycle scripts
+	"onCreateCommand": {
+		"install-tools": "rustup component add clippy rustfmt && rustup update"
+	},
+	// Mount the workspace to preserve file permissions and git configuration
+	"mounts": [
+		"source=${localWorkspaceFolder}/.git,target=${containerWorkspaceFolder}/.git,type=bind,consistency=cached"
+	]
+}
